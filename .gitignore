@@ -27,3 +27,5 @@ out/
 *.exe
 *.dll
 
+
+.gradle/
