@@ -31,7 +31,5 @@ public class XMLConverter {
 
             log.error("Exception occurred: ", e);
         }
-
-        log.info("XML converter function finished");
     }
 }
