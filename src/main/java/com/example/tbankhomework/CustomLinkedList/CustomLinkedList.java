@@ -38,27 +38,28 @@ public class CustomLinkedList<T> {
         }
     }
 
+    public Node<T> getNode(Integer index) throws CustomLinkedListException {
+        Node<T> answer = head;
+
+        if (index >= size || index < 0) {
+            throw new CustomLinkedListException("index out of bounds");
+        }
+
+        for (int i = 0; i < index; i++) {
+            answer = answer.next;
+        }
+
+        return answer;
+    }
+
     public T get(Integer index) throws CustomLinkedListException {
-       Node<T> answer = head;
-
-       if (index >= size || index < 0) {
-           throw new CustomLinkedListException("index out of bounds");
-       }
-
-       for (int i = 0; i < index; i++) {
-           answer = answer.next;
-       }
-
+      Node<T> answer = getNode(index);
        return answer.data;
     }
 
 
     public void remove(Integer index) throws CustomLinkedListException {
         Node<T> nodeForDelete = head;
-
-        if (index >= size || index < 0) {
-            throw new CustomLinkedListException("index out of bounds");
-        }
 
         if (index == 0) {
             head = nodeForDelete.next;
@@ -68,16 +69,14 @@ public class CustomLinkedList<T> {
             tail = nodeForDelete.previous;
         }
 
-        for (int i = 0; i < index; i++) {
-            nodeForDelete = nodeForDelete.next;
-        }
+        nodeForDelete = getNode(index);
 
         nodeForDelete.previous.next = nodeForDelete.next;
         nodeForDelete.next.previous = nodeForDelete.previous;
         size--;
     }
 
-    public boolean contains(T element) {
+    public Boolean contains(T element) {
         Node<T> current = head;
 
         while (current != null) {
@@ -106,6 +105,5 @@ public class CustomLinkedList<T> {
         }
         return list;
     }
-
 
 }

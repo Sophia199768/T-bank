@@ -2,8 +2,6 @@ package com.example.tbankhomework;
 
 import com.example.tbankhomework.CustomLinkedList.CustomLinkedList;
 import com.example.tbankhomework.Exception.CustomLinkedListException;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.List;
 import java.util.stream.Stream;
