@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class CustomLinkedList<T> {
+public class CustomLinkedList<T> implements CustomLinkedListI<T> {
     private Node<T> head;
     private Node<T> tail;
-    private Integer size;
+    private int size;
 
     private static class Node<T> {
         T data;
@@ -23,19 +23,23 @@ public class CustomLinkedList<T> {
         }
     }
 
+    public int size() {
+        return size;
+    }
+
     public void add(T element) {
         Node<T> newNode = new Node<>(element);
 
         if (head == null) {
             head = newNode;
             tail = newNode;
-            size = 1;
         } else {
             tail.next = newNode;
             newNode.previous = tail;
             tail = newNode;
-            size++;
         }
+
+        size += 1;
     }
 
     public Node<T> getNode(Integer index) throws CustomLinkedListException {
