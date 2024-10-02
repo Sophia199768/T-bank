@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -27,12 +28,27 @@ public class InitService {
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         String url = "https://kudago.com/public-api/v1.4/";
-        City[] cities = restTemplate.getForObject(url + "locations/", City[].class);
-        if (cities == null) log.error("Cannot init cities repo from " + url);
-        Arrays.stream(cities).forEach(locationRepository::create);
 
-        Category[] categories = restTemplate.getForObject("https://kudago.com/public-api/v1.4/event-categories/", Category[].class);
-        if (categories == null) log.error("Cannot init category repo from " + url);
-        Arrays.stream(categories).forEach(categoryRepository::create);
+        try {
+            City[] cities = restTemplate.getForObject(url + "locations/", City[].class);
+            if (cities == null) {
+                log.error("Cannot init cities");
+            } else {
+                Arrays.stream(cities).forEach(locationRepository::create);
+            }
+        } catch (RestClientException e) {
+            log.error("Failed to fetch cities");
+        }
+
+        try {
+            Category[] categories = restTemplate.getForObject(url + "event-categories/", Category[].class);
+            if (categories == null) {
+                log.error("Cannot init category");
+            } else {
+                Arrays.stream(categories).forEach(categoryRepository::create);
+            }
+        } catch (RestClientException e) {
+            log.error("Failed to fetch categories");
+        }
     }
 }

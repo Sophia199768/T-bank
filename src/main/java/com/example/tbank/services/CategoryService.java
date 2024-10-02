@@ -2,9 +2,9 @@ package com.example.tbank.services;
 
 import com.example.tbank.dto.CategoryDto;
 import com.example.tbank.mapper.CategoryMapper;
+import com.example.tbank.models.Category;
 import com.example.tbank.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +15,15 @@ public class CategoryService {
     private final CategoryRepository repository;
     private final CategoryMapper categoryMapper;
 
-    public List<CategoryDto> getCategories() {
-        return repository.read().stream().map(categoryMapper::toGetCategoryDto).toList();
+    public List<CategoryDto> findAllCategories() {
+        return repository.readAll().stream().map(categoryMapper::toGetCategoryDto).toList();
     }
 
-
     public CategoryDto getCategoryById(Integer id) {
+        Category category = repository.get(id);
+        if (category == null) {
+            throw new NotFoundException("Not found");
+        }
         return categoryMapper.toGetCategoryDto(repository.get(id));
     }
 

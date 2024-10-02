@@ -4,12 +4,15 @@ package com.example.tbank.repository;
 import com.example.tbank.models.Category;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class CategoryRepository {
-    private final HashMap<Integer, Category> hashMap = new HashMap<>();
+public class CategoryRepository implements RepositoryInterface<Category, Integer> {
+    private final ConcurrentHashMap<Integer, Category> hashMap = new ConcurrentHashMap<>();
 
     public void create(Category category) {
         hashMap.put(category.getId(), category);
@@ -19,8 +22,8 @@ public class CategoryRepository {
         return hashMap.get(id);
     }
 
-    public List<Category> read() {
-        return hashMap.values().stream().toList();
+    public List<Category> readAll() {
+        return Collections.unmodifiableList(new ArrayList<>(hashMap.values()));
     }
     public void delete(Integer id) {
         hashMap.remove(id);

@@ -2,6 +2,7 @@ package com.example.tbank.services;
 
 import com.example.tbank.dto.CityDto;
 import com.example.tbank.mapper.LocationMapper;
+import com.example.tbank.models.City;
 import com.example.tbank.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,16 @@ public class LocationService {
     private final LocationMapper locationMapper;
 
 
-    public List<CityDto> getCity() {
-        return repository.read().stream().map(locationMapper::toGetCityDto).toList();
+    public List<CityDto> findAllCities() {
+        return repository.readAll().stream().map(locationMapper::toGetCityDto).toList();
     }
 
     public CityDto getCityById(String slug) {
+        City city = repository.get(slug);
+        if (city == null) {
+            throw new NotFoundException("Not found");
+        }
+
         return locationMapper.toGetCityDto(repository.get(slug));
     }
 

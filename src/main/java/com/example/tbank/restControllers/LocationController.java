@@ -18,7 +18,7 @@ public class LocationController {
 
     @GetMapping
     public ResponseEntity<List<CityDto>> getCity() {
-        return ResponseEntity.ok(locationService.getCity());
+        return ResponseEntity.ok(locationService.findAllCities());
     }
 
     @GetMapping("/{slug}")
