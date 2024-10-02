@@ -2,6 +2,7 @@ package com.example.tbank.services;
 
 import com.example.tbank.dto.CityDto;
 import com.example.tbank.mapper.LocationMapper;
+import com.example.tbank.models.Category;
 import com.example.tbank.models.City;
 import com.example.tbank.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,11 @@ public class LocationService {
     }
 
     public void deleteCity(String slug) {
+        City city = repository.get(slug);
+        if (city == null) {
+            throw new NotFoundException("Not found");
+        }
+
         repository.delete(slug);
     }
 }

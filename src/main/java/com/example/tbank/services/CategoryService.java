@@ -32,6 +32,11 @@ public class CategoryService {
     }
 
     public void deleteCategory(Integer id) {
+        Category category = repository.get(id);
+        if (category == null) {
+            throw new NotFoundException("Not found");
+        }
+
         repository.delete(id);
     }
 }
