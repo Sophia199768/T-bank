@@ -1,73 +1,45 @@
 package com.example.tbank.services;
 
 import com.example.tbank.dto.CategoryDto;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-@Testcontainers
-@ContextConfiguration(initializers = {CategoryServiceIntegrationTests.Initializer.class})
-class CategoryServiceIntegrationTests {
+@AutoConfigureWireMock(port = 9999)
+public class CategoryServiceIntegrationTests {
 
-    @Container
-    public static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:13-alpine")
-            .withDatabaseName("testdb")
-            .withUsername("user")
-            .withPassword("password");
-
-    private static WireMockServer wireMockServer;
+    @Autowired
+    private InitService service;
 
     @Autowired
     private CategoryService categoryService;
 
-    @BeforeAll
-    static void setupWireMock() {
-        wireMockServer = new WireMockServer(9562); // Используем другой порт для WireMock
-        wireMockServer.start();
-        configureFor("localhost", wireMockServer.port());
-    }
-
-    @AfterAll
-    static void teardownWireMock() {
-        if (wireMockServer != null) {
-            wireMockServer.stop();
-        }
-    }
-
     @BeforeEach
-    void setup() {
-        wireMockServer.resetAll();
+    public void setup() {
+        this.service.setUrl("http://localhost:9999");
     }
 
     @Test
-    void findAllCategories_shouldReturnListOfCategories_whenCategoriesExist() {
-         List<CategoryDto> categories = categoryService.findAllCategories();
+    public void contextLoads() {
+        stubFor(get(urlEqualTo("/locations/"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("[{\"name\":\"New York\", \"slug\":\"new-york\"}]")));
 
-         Assertions.assertNotNull(categories);
-         Assertions.assertFalse(categories.isEmpty());
-    }
+        List<CategoryDto> categories = categoryService.findAllCategories();
 
-    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(ConfigurableApplicationContext context) {
-            TestPropertyValues.of(
-                    "spring.datasource.url=" + postgresContainer.getJdbcUrl(),
-                    "spring.datasource.username=" + postgresContainer.getUsername(),
-                    "spring.datasource.password=" + postgresContainer.getPassword()
-            ).applyTo(context.getEnvironment());
-        }
+        assertNotNull(categories);
+        assertFalse(categories.isEmpty());
+
     }
 }
+

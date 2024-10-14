@@ -84,6 +84,15 @@ class CategoryServiceTest {
     }
 
     @Test
+    void postCategory_shouldReturnNothing_whenCategoryDoesNotExist() {
+        int categoryId = 1;
+        CategoryDto dto = new CategoryDto(categoryId, "CategoryName", null);
+        categoryService.postCategory(dto);
+
+        assertDoesNotThrow(() -> categoryService.postCategory(dto));
+    }
+
+    @Test
     void deleteCategory_shouldDeleteCategory_whenCategoryExists() {
         int categoryId = 1;
 
