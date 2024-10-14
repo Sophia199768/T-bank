@@ -17,6 +17,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -26,6 +28,8 @@ public class Service {
     private final RestTemplate restTemplate;
     private final CurrMapper currMapper;
     private final CircuitBreaker circuitBreaker;
+    private final XmlMapper xmlMapper;
+
     @Value("${url}")
     private String url;
 
@@ -52,22 +56,22 @@ public class Service {
                 .filter(curr -> Objects.equals(curr.getNumCode(), convertRequest.getToCurrency()))
                 .findFirst().orElseThrow(() -> new CurrException("Not found currency code : " + convertRequest.getToCurrency()));
 
-        Double amountInFromCurrency = convertRequest.getAmount();
-        Double rateFrom = Double.parseDouble(valuteFrom.getVunitRate().replace(",", "."));
-        Double rateTo = Double.parseDouble(valuteTo.getVunitRate().replace(",", "."));
-        Double convertedAmount = (amountInFromCurrency * rateFrom) / rateTo;
+        BigDecimal amountInFromCurrency = convertRequest.getAmount();
 
-        ConvertResponse convertResponse = new ConvertResponse(valuteFrom.getCharCode(), valuteTo.getCharCode(),
+        BigDecimal rateFrom = new BigDecimal(valuteFrom.getVunitRate().replace(",", "."));
+        BigDecimal rateTo = new BigDecimal(valuteTo.getVunitRate().replace(",", "."));
+
+        BigDecimal convertedAmount = amountInFromCurrency.multiply(rateFrom).divide(rateTo, RoundingMode.HALF_UP);
+
+
+        return new ConvertResponse(valuteFrom.getCharCode(), valuteTo.getCharCode(),
                 convertedAmount);
-
-        return convertResponse;
     }
 
     @Cacheable(value = "currencyCache")
     public ValCurs getCurrency() {
 
         Supplier<ValCurs> supplier = circuitBreaker.decorateSupplier(() -> {
-            XmlMapper xmlMapper = new XmlMapper();
             String response;
 
             try {

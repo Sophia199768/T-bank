@@ -2,6 +2,8 @@ package com.example.tbanks.dto;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -10,5 +12,5 @@ import lombok.*;
 public class ConvertResponse {
     private String fromCurrency;
     private String toCurrency;
-    private Double convertedAmount;
+    private BigDecimal convertedAmount;
 }

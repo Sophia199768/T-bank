@@ -20,6 +20,10 @@ public class Config {
         return new CurrMapper();
     }
 
+
+    @Bean
+    public XmlMapper xmlMapper() { return new XmlMapper(); }
+
     @Bean
     public CircuitBreaker CirBreaker() {
         CircuitBreakerConfig config = CircuitBreakerConfig.custom()
