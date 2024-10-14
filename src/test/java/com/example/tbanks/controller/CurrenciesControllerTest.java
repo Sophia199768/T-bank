@@ -22,6 +22,8 @@ import static org.mockito.Mockito.when;
 
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.math.BigDecimal;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +55,7 @@ public class CurrenciesControllerTest {
         ConvertRequest request = new ConvertRequest();
         request.setFromCurrency(String.valueOf(840));
         request.setToCurrency(String.valueOf(978));
-        request.setAmount(100.0);
+        request.setAmount(BigDecimal.valueOf(100.0));
 
         when(service.convert(any(ConvertRequest.class))).thenThrow(new ServerException("Unavailable"));
 
@@ -69,12 +71,12 @@ public class CurrenciesControllerTest {
         ConvertRequest request = new ConvertRequest();
         request.setFromCurrency(String.valueOf(840));
         request.setToCurrency(String.valueOf(978));
-        request.setAmount(100.0);
+        request.setAmount(BigDecimal.valueOf(100.0));
 
         ConvertResponse mockResponse = new ConvertResponse();
         mockResponse.setFromCurrency("USD");
         mockResponse.setToCurrency("EUR");
-        mockResponse.setConvertedAmount(85.0);
+        mockResponse.setConvertedAmount(BigDecimal.valueOf(85.0));
         when(service.convert(any(ConvertRequest.class))).thenReturn(mockResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/currencies/convert")
@@ -92,7 +94,7 @@ public class CurrenciesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fromCurrency\":840, \"toCurrency\":null, \"amount\":100}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("toCurrency can't be null")));
+                .andExpect(jsonPath("$.toCurrency", is("toCurrency can't be null")));
     }
 
     @Test
@@ -101,7 +103,7 @@ public class CurrenciesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fromCurrency\":null, \"toCurrency\":978, \"amount\":100}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("fromCurrency can't be null")));
+                .andExpect(jsonPath("$.fromCurrency", is("fromCurrency can't be null")));
     }
 
     @Test
@@ -110,7 +112,7 @@ public class CurrenciesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fromCurrency\":840, \"toCurrency\":978, \"amount\":null}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("amount can't be null")));
+                .andExpect(jsonPath("$.amount", is("must not be null")));
     }
 
     @Test
@@ -119,6 +121,6 @@ public class CurrenciesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fromCurrency\":840, \"toCurrency\":978, \"amount\":0}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("amount can't be 0 or less then 0")));
+                .andExpect(jsonPath("$.amount", is("amount can't be 0 or less than 0")));
     }
 }
