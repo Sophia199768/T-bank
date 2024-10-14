@@ -1,0 +1,7 @@
+url: "https://www.cbr.ru/scripts/XML_daily.asp?date_req=02/03/2002"
+spring:
+  application:
+    name: T-banks
+  cache:
+    caffeine:
+      spec: "maximumSize=1000,expireAfterWrite=1h"
