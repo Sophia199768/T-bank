@@ -1,5 +1,6 @@
 package com.example.tbanks.exception;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,7 +21,9 @@ public class MyExceptionHandler {
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<String> ServerMessage(ServerException serverException) {
-        return new ResponseEntity<>(serverException.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Retry-After", "60");
+        return new ResponseEntity<>(serverException.getMessage(), headers, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
 
