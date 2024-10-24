@@ -1,0 +1,20 @@
+POST http://localhost:8080/events
+Content-Type: application/json
+
+{
+  "name": "tset",
+  "price": 0,
+  "date": "1992-01-01",
+  "placeId": 1
+}
+###
+
+POST http://localhost:8080/places
+Content-Type: application/json
+
+{
+  "slug": "et",
+  "name": "et"
+}
+
+###

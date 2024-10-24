@@ -1,0 +1,14 @@
+url: "https://www.cbr.ru/scripts/XML_daily.asp?date_req=02/03/2002"
+spring:
+  application:
+    name: T-banks
+  cache:
+    caffeine:
+      spec: "maximumSize=1000,expireAfterWrite=1h"
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/postgres"
+    username: postgres
+    password: 1234
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.xml
