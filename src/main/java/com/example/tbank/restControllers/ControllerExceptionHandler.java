@@ -1,6 +1,6 @@
-package com.example.tbanks.exception;
+package com.example.tbank.restControllers;
 
-import org.springframework.http.HttpHeaders;
+import com.example.tbank.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,30 +12,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class MyExceptionHandler {
-
-    @ExceptionHandler(CurrException.class)
-    public ResponseEntity<String> Message(CurrException currException) {
-        return new ResponseEntity<>(currException.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ServerException.class)
-    public ResponseEntity<String> ServerMessage(ServerException serverException) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Retry-After", "60");
-        return new ResponseEntity<>(serverException.getMessage(), headers, HttpStatus.SERVICE_UNAVAILABLE);
-    }
-
+public class ControllerExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 }

@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
+import java.time.LocalDate;
+
+
 @Getter
+@Setter
 @AllArgsConstructor
-public class CategoryDto {
-    private Integer id;
-    private String slug;
+public class EventDto {
     private String name;
+    private Double price;
+    private LocalDate date;
+    private Long placeId;
 }
